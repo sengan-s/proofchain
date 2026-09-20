@@ -1,0 +1,12 @@
+# ProofChain Digital Evidence Mock Stream - CCTV footage sample byte header
+[FORMAT]: MP4_H264_VIDEO
+[LOCATION]: Sector 7 Security Feed Camera 04
+[TIMESTAMP]: 2026-09-04 14:30:00 UTC
+[FRAME_COUNT]: 14400
+[SHA256_SEED]: PROOFCHAIN_ORIGINAL_STREAM_8F72A91BC42D98
+================================================================
+BINARY CONTENT SIMULATION STREAM FOR PROOFCHAIN PROTOTYPE TESTING
+================================================================
+00000000: 0000 0020 6674 7970 6973 6f6d 0000 0200 ....ftypisom....
+00000100: 6973 6f6d 6973 6f32 6176 6331 6d70 3431 isomiso2avc1mp41
+00000200: 4576 6964 656e 6365 5365 6375 7269 7479 EvidenceSecurity

@@ -1,0 +1,11 @@
+node_modules/
+artifacts/
+cache/
+__pycache__/
+*.pyc
+.env
+*.db
+uploads/*
+!uploads/.gitkeep
+backend/contract_data.json
+frontend/js/contract_abi.json

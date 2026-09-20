@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProofChain – Blockchain Digital Evidence Integrity System</title>
+    <meta name="description" content="Blockchain-Based Digital Evidence Integrity and Tamper Detection System using Cryptographic SHA-256 Hashing and Smart Contracts.">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Ethers.js for Web3 Browser Wallet Integration -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.10.0/ethers.umd.min.js"></script>
+</head>
+<body>
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-logo">PC</div>
+            <div class="brand-text">
+                <h1>PROOFCHAIN</h1>
+                <span>EVIDENCE INTEGRITY</span>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li>
+                <a href="#" class="nav-link active" data-view="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="evidence">
+                    <span class="nav-icon">🗂️</span>
+                    <span class="nav-text">Evidence Registry</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="register">
+                    <span class="nav-icon">🛡️</span>
+                    <span class="nav-text">Register Evidence</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="verify">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-text">Verify Evidence</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="alerts">
+                    <span class="nav-icon">⚠️</span>
+                    <span class="nav-text">Tampering Alerts</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="explorer">
+                    <span class="nav-icon">⛓️</span>
+                    <span class="nav-text">Blockchain Explorer</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link" data-view="video-verify" id="nav-video-verify">
+                    <span class="nav-icon">🎥</span>
+                    <span class="nav-text">Video Verification</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="role-badge">
+                <span style="color:var(--text-muted);">ACTIVE USER</span>
+                <strong style="color:var(--accent-cyan);" id="user-role-display">Investigator</strong>
+            </div>
+            <button class="wallet-btn" id="wallet-connect-btn" onclick="window.proofChainWeb3.connectWallet()">
+                <span>🦊</span> Connect Wallet
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN APP CONTENT WRAPPER -->
+    <div class="main-wrapper">
+        <!-- HEADER BAR -->
+        <header class="header">
+            <div class="header-title">
+                <span>ProofChain Integrity Engine</span>
+                <div class="live-indicator">
+                    <div class="live-dot"></div>
+                    <span>HARDHAT NODE LIVE</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-seed" id="seed-demo-btn">
+                    🌱 Seed Demo Data
+                </button>
+            </div>
+        </header>
+
+        <!-- CONTENT BODY -->
+        <main class="content-body">
+
+            <!-- VIEW 1: DASHBOARD -->
+            <section id="view-dashboard" class="view-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Total Evidence</h3>
+                            <div class="stat-value" id="stat-total">0</div>
+                        </div>
+                        <div class="stat-icon total">📂</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Verified Authentic</h3>
+                            <div class="stat-value" id="stat-verified" style="color:var(--status-verified);">0</div>
+                        </div>
+                        <div class="stat-icon verified">✅</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Tampering Detected</h3>
+                            <div class="stat-value" id="stat-tampered" style="color:var(--status-tampered);">0</div>
+                        </div>
+                        <div class="stat-icon tampered">⚠️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <h3>Pending Evidence</h3>
+                            <div class="stat-value" id="stat-pending" style="color:var(--status-pending);">0</div>
+                        </div>
+                        <div class="stat-icon pending">⏳</div>
+                    </div>
+                    <!-- VIDEO VERIFICATION STAT CARD -->
+                    <div class="stat-card" style="cursor:pointer;" onclick="document.querySelector('[data-view=\'video-verify\']').click()">
+                        <div class="stat-info">
+                            <h3>Video Verifications</h3>
+                            <div class="stat-value" id="stat-vv-total" style="color:var(--accent-purple);">0</div>
+                            <div style="display:flex; gap:0.6rem; margin-top:0.3rem; font-size:0.72rem;">
+                                <span style="color:var(--status-verified);">✓ <span id="stat-vv-verified">0</span></span>
+                                <span style="color:var(--status-pending);">⏳ <span id="stat-vv-pending">0</span></span>
+                                <span style="color:var(--status-tampered);">✕ <span id="stat-vv-failed">0</span></span>
+                            </div>
+                        </div>
+                        <div class="stat-icon video">🎥</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+                    <div class="cyber-card">
+                        <div class="card-header">
+                            <div class="card-title">Recent Registered Evidence</div>
+                            <a href="#" onclick="document.querySelector('[data-view=\'evidence\']').click();" style="color:var(--accent-cyan); font-size:0.82rem; text-decoration:none;">View All →</a>
+                        </div>
+                        <table class="cyber-table">
+                            <thead>
+                                <tr>
+                                    <th>Evidence ID</th>
+                                    <th>Case</th>
+                                    <th>Type</th>
+                                    <th>SHA-256 Hash</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-evidence-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-header">
+                            <div class="card-title">Live Verification Attempts</div>
+                        </div>
+                        <div id="recent-verifications-list">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: EVIDENCE REGISTRY TABLE -->
+            <section id="view-evidence" class="view-section">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-title">Digital Evidence Registry</div>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                        <input type="text" id="search-input" placeholder="Search by Evidence ID, Case ID, or Filename..." style="flex:1; min-width:240px;">
+                        <select id="type-filter" style="width: 160px;">
+                            <option value="">All Types</option>
+                            <option value="Video">Video (MP4/AVI)</option>
+                            <option value="Image">Image (JPG/PNG)</option>
+                            <option value="Document">Document (PDF/DOCX)</option>
+                            <option value="Audio">Audio (WAV/MP3)</option>
+                        </select>
+                        <select id="status-filter" style="width: 160px;">
+                            <option value="">All Statuses</option>
+                            <option value="REGISTERED">REGISTERED</option>
+                            <option value="VERIFIED">VERIFIED</option>
+                            <option value="TAMPERED">TAMPERED</option>
+                        </select>
+                    </div>
+
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>Evidence ID</th>
+                                <th>Case ID</th>
+                                <th>Type</th>
+                                <th>SHA-256 Fingerprint</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-evidence-tbody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- VIEW 3: REGISTER EVIDENCE FORM -->
+            <section id="view-register" class="view-section">
+                <div class="cyber-card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="card-header">
+                        <div class="card-title">🛡️ Register New Digital Evidence</div>
+                    </div>
+
+                    <form id="register-evidence-form" enctype="multipart/form-data">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="reg-evidence-id">Evidence ID *</label>
+                                <input type="text" id="reg-evidence-id" name="evidence_id" placeholder="e.g. EVD-003" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-case-id">Case ID *</label>
+                                <input type="text" id="reg-case-id" name="case_id" placeholder="e.g. CASE-2026-09" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="reg-title">Evidence Title *</label>
+                                <input type="text" id="reg-title" name="title" placeholder="Descriptive title of collected evidence..." required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="reg-desc">Description</label>
+                                <textarea id="reg-desc" name="description" rows="3" placeholder="Provide background information, forensic source, and details..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-type">Evidence Type *</label>
+                                <select id="reg-type" name="evidence_type" required>
+                                    <option value="Video">Video (.mp4, .avi, .mov)</option>
+                                    <option value="Image">Image (.jpg, .png)</option>
+                                    <option value="Document">Document (.pdf, .docx, .txt)</option>
+                                    <option value="Audio">Audio (.wav, .mp3)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-location">Collection Location *</label>
+                                <input type="text" id="reg-location" name="location" placeholder="e.g. Server Room A, Cam 4" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="reg-collector">Collector / Officer Name *</label>
+                                <input type="text" id="reg-collector" name="collector" placeholder="e.g. Det. Sarah Connor" required>
+                            </div>
+
+                            <!-- FILE UPLOAD DROPZONE -->
+                            <div class="form-group full-width">
+                                <label>Upload Digital Evidence File *</label>
+                                <label class="file-dropzone" for="reg-file-input">
+                                    <div class="dropzone-icon">📁</div>
+                                    <div style="font-weight:600;">Click or drag file here to upload</div>
+                                    <div style="font-size:0.78rem; color:var(--text-muted);">Supported: MP4, AVI, MOV, JPG, PNG, PDF, DOCX, TXT, WAV, MP3</div>
+                                    <input type="file" id="reg-file-input" name="file" style="display:none;" required>
+                                </label>
+                            </div>
+
+                            <!-- LIVE SHA-256 PREVIEW BOX -->
+                            <div class="form-group full-width">
+                                <label>Calculated SHA-256 Fingerprint Preview</label>
+                                <div class="hash-box">
+                                    <div class="hash-code" id="reg-hash-preview">File SHA-256 hash will appear here on selection.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; text-align: right;">
+                            <button type="submit" class="btn-primary">
+                                Register Evidence On-Chain
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- VIEW 4: VERIFY EVIDENCE TOOL -->
+            <section id="view-verify" class="view-section">
+                <div class="cyber-card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="card-header">
+                        <div class="card-title">🔍 Verify Evidence Integrity</div>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+                        Upload a suspect evidence file to verify whether its byte stream and SHA-256 fingerprint match the immutable original hash registered on the blockchain.
+                    </p>
+
+                    <form id="verify-evidence-form" enctype="multipart/form-data">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="verify-evidence-id">Evidence ID to Verify *</label>
+                                <input type="text" id="verify-evidence-id" name="evidence_id" placeholder="e.g. EVD-001" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Upload Suspect File *</label>
+                                <label class="file-dropzone" for="verify-file-input">
+                                    <div class="dropzone-icon">📥</div>
+                                    <div style="font-weight:600;">Select or drop the file to test against blockchain record</div>
+                                    <input type="file" id="verify-file-input" name="file" style="display:none;" required>
+                                </label>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label>Live Candidate SHA-256 Preview</label>
+                                <div class="hash-box">
+                                    <div class="hash-code" id="verify-hash-preview">Candidate file SHA-256 hash will be computed live.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem; text-align: right;">
+                            <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue)); color:#fff;">
+                                Run Integrity Verification
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- VERIFICATION RESULT CONTAINER -->
+                    <div id="verify-result-container" class="verify-result-box">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: EVIDENCE DETAIL & CHAIN OF CUSTODY -->
+            <section id="view-detail" class="view-section">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            Evidence Detail: <span id="detail-id" style="color:var(--accent-cyan);"></span>
+                        </div>
+                        <span id="detail-status-badge" class="badge">REGISTERED</span>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+                        <div>
+                            <h4 style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; margin-bottom:0.75rem;">EVIDENCE METADATA</h4>
+                            <table style="font-size:0.88rem; width:100%;">
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Case ID:</td><td><strong id="detail-case"></strong></td></tr>
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Title:</td><td id="detail-title"></td></tr>
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Type:</td><td id="detail-type"></td></tr>
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Original Filename:</td><td id="detail-filename"></td></tr>
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Collector:</td><td id="detail-collector"></td></tr>
+                                <tr><td style="color:var(--text-muted); padding:0.3rem 0;">Location:</td><td id="detail-location"></td></tr>
+                            </table>
+                        </div>
+
+                        <div>
+                            <h4 style="color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; margin-bottom:0.75rem;">BLOCKCHAIN INTEGRITY RECORD</h4>
+                            <div style="background:rgba(0,0,0,0.3); padding:1rem; border-radius:8px; border:1px solid var(--glass-border);">
+                                <label style="font-size:0.75rem; color:var(--text-muted); display:block;">SHA-256 IMMUTABLE FINGERPRINT</label>
+                                <div class="hash-code" id="detail-hash" style="margin-bottom:0.75rem;"></div>
+
+                                <label style="font-size:0.75rem; color:var(--text-muted); display:block;">BLOCKCHAIN TRANSACTION HASH</label>
+                                <div class="hash-code" id="detail-tx" style="margin-bottom:0.75rem;"></div>
+
+                                <label style="font-size:0.75rem; color:var(--text-muted); display:block;">BLOCK NUMBER</label>
+                                <div style="font-size:0.88rem; font-weight:600; color:var(--accent-cyan);" id="detail-block"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CHAIN OF CUSTODY VISUAL TIMELINE -->
+                    <div style="border-top:1px solid var(--glass-border); padding-top:1.5rem;">
+                        <h4 style="color:var(--text-main); font-size:1rem; margin-bottom:1rem;">⛓️ Chain of Custody Timeline</h4>
+                        <div class="timeline" id="custody-timeline-container">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <!-- ADD CUSTODY EVENT FORM -->
+                        <div style="background:rgba(255,255,255,0.02); padding:1.25rem; border-radius:8px; border:1px solid var(--glass-border); margin-top:1.5rem;">
+                            <h5 style="margin-bottom:0.75rem;">Add Chain of Custody Event</h5>
+                            <form id="add-custody-form">
+                                <input type="hidden" id="custody-evidence-id">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Action / Transfer Event *</label>
+                                        <select id="custody-action" required>
+                                            <option value="Evidence Transferred">Evidence Transferred</option>
+                                            <option value="Evidence Received">Evidence Received</option>
+                                            <option value="Evidence Analyzed">Evidence Analyzed</option>
+                                            <option value="Evidence Submitted to Court">Evidence Submitted to Court</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Person Name *</label>
+                                        <input type="text" id="custody-person" placeholder="e.g. Officer Blake" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Role *</label>
+                                        <input type="text" id="custody-role" placeholder="e.g. Forensic Examiner" required>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Event Notes</label>
+                                        <input type="text" id="custody-notes" placeholder="Notes regarding custody transfer...">
+                                    </div>
+                                </div>
+                                <div style="margin-top:1rem; text-align:right;">
+                                    <button type="submit" class="wallet-btn" style="width:auto; padding:0.5rem 1.25rem;">+ Log Custody Event On-Chain</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 6: TAMPERING ALERTS -->
+            <section id="view-alerts" class="view-section">
+                <div class="cyber-card">
+                    <div class="card-header">
+                        <div class="card-title">⚠️ Tampering Alerts Log</div>
+                    </div>
+                    <div id="alerts-feed-container">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 7: BLOCKCHAIN EXPLORER -->
+            <section id="view-explorer" class="view-section">
+                <div class="cyber-card" style="max-width: 800px; margin: 0 auto;">
+                    <div class="card-header">
+                        <div class="card-title">⛓️ ProofChain Local Blockchain Explorer</div>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.25rem;">
+                        <div class="hash-box">
+                            <label>NETWORK STATUS</label>
+                            <div id="explorer-status" style="font-weight:700; color:var(--status-verified);">CONNECTED</div>
+                        </div>
+                        <div class="hash-box">
+                            <label>RPC NODE URL</label>
+                            <div class="hash-code" id="explorer-rpc">http://127.0.0.1:8545</div>
+                        </div>
+                        <div class="hash-box" style="grid-column: 1 / -1;">
+                            <label>EVIDENCE REGISTRY SMART CONTRACT ADDRESS</label>
+                            <div class="hash-code" id="explorer-contract">Deployed Address...</div>
+                        </div>
+                        <div class="hash-box">
+                            <label>CURRENT BLOCK NUMBER</label>
+                            <div class="hash-code" id="explorer-block">0</div>
+                        </div>
+                        <div class="hash-box">
+                            <label>CHAIN ID</label>
+                            <div class="hash-code">31337 (Hardhat Localnet)</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 8: VIDEO VERIFICATION -->
+            <section id="view-video-verify" class="view-section">
+
+                <!-- Top info bar -->
+                <div class="cyber-card" style="margin-bottom:1.5rem; background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(59,130,246,0.06));">
+                    <div class="card-header" style="margin-bottom:0;">
+                        <div class="card-title">🎥 Video Verification — Proof Authenticity Layer</div>
+                        <span class="evidence-video-badge">🔒 Secure · Private · Hashed</span>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:1.5rem; align-items:start;">
+
+                    <!-- LEFT COLUMN: RECORDER / UPLOAD -->
+                    <div>
+                        <!-- Proof Selector -->
+                        <div class="cyber-card" style="margin-bottom:1.25rem;">
+                            <div class="card-header"><div class="card-title">1. Select Proof to Verify</div></div>
+                            <div class="form-group">
+                                <label for="vv-evidence-id">Evidence ID *</label>
+                                <input type="text" id="vv-evidence-id" placeholder="e.g. EVD-001" autocomplete="off">
+                            </div>
+                            <div id="vv-error-msg" style="display:none; margin-top:0.75rem; color:var(--status-tampered); font-size:0.85rem; background:rgba(255,59,92,0.08); border:1px solid rgba(255,59,92,0.3); border-radius:6px; padding:0.65rem 1rem;"></div>
+                        </div>
+
+                        <!-- Challenge Box -->
+                        <div class="challenge-box">
+                            <div class="challenge-label">📋 Verification Challenge</div>
+                            <div class="challenge-text" id="vv-challenge-text">""]</div>
+                            <button class="challenge-refresh-btn" id="vv-refresh-challenge" type="button">↻ New Challenge</button>
+                        </div>
+
+                        <!-- Tab Toggle -->
+                        <div class="video-tabs">
+                            <button class="video-tab-btn active" id="vv-tab-camera" type="button">📷 Record Video</button>
+                            <button class="video-tab-btn" id="vv-tab-upload" type="button">📁 Upload Video</button>
+                        </div>
+
+                        <!-- CAMERA PANEL -->
+                        <div id="vv-camera-panel">
+                            <!-- Camera preview -->
+                            <div class="video-recorder-box" id="vv-recorder-box">
+                                <div class="camera-placeholder" id="vv-camera-placeholder">
+                                    <div class="camera-placeholder-icon">📷</div>
+                                    <div>Click "Start Camera" to begin</div>
+                                    <div style="font-size:0.75rem; color:var(--text-dim);">Camera and microphone access required</div>
+                                </div>
+                                <video id="vv-camera-preview" autoplay muted playsinline style="display:none;"></video>
+                                <!-- Recording overlay -->
+                                <div class="recording-overlay" id="vv-overlay" style="display:none;">
+                                    <div class="rec-indicator"><div class="rec-dot"></div> REC</div>
+                                    <div class="recording-timer" id="vv-timer-display">00:00 / 00:30</div>
+                                </div>
+                            </div>
+
+                            <!-- Status text -->
+                            <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:1rem; min-height:1.2rem;" id="vv-status-text">Start the camera to begin verification recording.</div>
+
+                            <!-- Controls -->
+                            <div class="recorder-controls">
+                                <button class="btn-primary" id="vv-start-camera-btn" type="button" style="font-size:0.85rem; padding:0.65rem 1.2rem;">📷 Start Camera</button>
+                                <button class="btn-record" id="vv-record-btn" type="button" disabled>⏺ Record</button>
+                                <button class="btn-stop" id="vv-stop-btn" type="button" disabled>⏹ Stop</button>
+                                <button class="btn-retake" id="vv-retake-btn" type="button">↩ Retake</button>
+                            </div>
+
+                            <!-- Camera video preview (post-record) -->
+                            <div id="vv-preview-section" style="display:none; margin-bottom:1rem;">
+                                <label style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem; display:block;">RECORDED VIDEO PREVIEW</label>
+                                <video id="vv-preview-video" controls style="width:100%; border-radius:10px; border:1px solid var(--glass-border);"></video>
+                            </div>
+                        </div>
+
+                        <!-- UPLOAD PANEL -->
+                        <div id="vv-upload-panel" style="display:none;">
+                            <label class="file-dropzone" for="vv-upload-input" id="vv-upload-label">
+                                <div class="dropzone-icon">🎬</div>
+                                <div style="font-weight:600;">Click or drag video here</div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">Supported: MP4, WebM, MOV · Max 100 MB</div>
+                                <input type="file" id="vv-upload-input" accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov" style="display:none;">
+                            </label>
+                            <div id="vv-upload-preview" style="display:none; margin-top:1rem;">
+                                <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.4rem;" id="vv-upload-filename"></div>
+                                <video id="vv-upload-preview-video" controls style="width:100%; border-radius:10px; border:1px solid var(--glass-border); max-height:220px;"></video>
+                                <button class="btn-retake" id="vv-upload-retake-btn" type="button" style="margin-top:0.75rem;">↩ Choose Different Video</button>
+                            </div>
+                        </div>
+
+                        <!-- SUBMIT SECTION -->
+                        <form id="vv-submit-form" style="display:none;" id="vv-submit-section">
+                            <div id="vv-submit-section">
+                                <div class="form-group" style="margin-bottom:1rem; margin-top:1rem;">
+                                    <label for="vv-challenge-response">Your Response (optional — type what you said)</label>
+                                    <input type="text" id="vv-challenge-response" placeholder="e.g. I am verifying this proof...">
+                                </div>
+                                <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.9rem;">
+                                    🔐 Submit Video Verification
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- PROCESSING STATE -->
+                        <div id="vv-processing-section" style="display:none;">
+                            <div style="text-align:center; margin-top:1rem; margin-bottom:0.5rem; font-size:0.9rem; font-weight:600; color:var(--accent-cyan);">VERIFYING VIDEO...</div>
+                            <ul class="processing-checklist">
+                                <li class="processing-item" id="step-upload">
+                                    <div class="processing-icon">○</div>
+                                    <span>Upload completed</span>
+                                </li>
+                                <li class="processing-item" id="step-hash">
+                                    <div class="processing-icon">○</div>
+                                    <span>Generating video hash (SHA-256)</span>
+                                </li>
+                                <li class="processing-item" id="step-integrity">
+                                    <div class="processing-icon">○</div>
+                                    <span>Checking video integrity</span>
+                                </li>
+                                <li class="processing-item" id="step-analysis">
+                                    <div class="processing-icon">○</div>
+                                    <span>Analyzing verification response</span>
+                                </li>
+                                <li class="processing-item" id="step-result">
+                                    <div class="processing-icon">○</div>
+                                    <span>Generating verification result</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- RESULT CONTAINER -->
+                        <div id="vv-result-container"></div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: HISTORY & INFO -->
+                    <div>
+                        <!-- Instructions card -->
+                        <div class="cyber-card" style="margin-bottom:1.25rem;">
+                            <div class="card-header"><div class="card-title">📖 How It Works</div></div>
+                            <ol style="padding-left:1.25rem; font-size:0.85rem; color:var(--text-muted); line-height:2;">
+                                <li>Enter the <strong style="color:var(--text-main);">Evidence ID</strong> of the proof you want to verify</li>
+                                <li>Read the <strong style="color:var(--accent-purple);">verification challenge</strong> shown on screen</li>
+                                <li>Record or upload a short video (<strong style="color:var(--text-main);">max 30 seconds</strong>)</li>
+                                <li>Type your verbal response (optional)</li>
+                                <li>Submit — ProofChain generates a <strong style="color:var(--accent-cyan);">SHA-256 hash</strong> of your video</li>
+                                <li>A <strong style="color:var(--status-verified);">Verification Certificate</strong> is generated upon success</li>
+                            </ol>
+                            <div style="margin-top:1rem; padding:0.75rem; background:rgba(139,92,246,0.06); border-radius:8px; border:1px solid rgba(139,92,246,0.2); font-size:0.78rem; color:var(--text-muted);">
+                                <strong style="color:var(--accent-purple);">Privacy:</strong> Videos are stored privately. Only authenticated users can access them. Your video hash is linked to the blockchain record.
+                            </div>
+                        </div>
+
+                        <!-- Video Verification History -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">📋 Verification History</div>
+                                <button class="btn-retake" onclick="loadVideoHistory()" style="font-size:0.75rem; padding:0.3rem 0.6rem;">↻ Refresh</button>
+                            </div>
+                            <div id="vv-history-list">
+                                <div style="color:var(--text-muted); font-size:0.85rem; text-align:center; padding:1rem;">Loading history...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VV DETAIL MODAL -->
+            <div id="vv-detail-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(0,0,0,0.7); backdrop-filter:blur(6px); align-items:center; justify-content:center;">
+                <div style="background:var(--bg-secondary); border:1px solid var(--glass-border); border-radius:16px; padding:2rem; max-width:540px; width:90%; max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; border-bottom:1px solid var(--glass-border); padding-bottom:0.75rem;">
+                        <div style="font-weight:700; font-size:1rem;">Video Verification Detail</div>
+                        <button onclick="closeVVModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.3rem; cursor:pointer; line-height:1;">✕</button>
+                    </div>
+                    <div id="vv-detail-content"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Application Controller Scripts -->
+    <script src="/js/web3.js"></script>
+    <script src="/js/app.js"></script>
+    <!-- QR Code library for Verification Certificate -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Video Verification Module -->
+    <script src="/js/video-verify.js"></script>
+</body>
+</html>
