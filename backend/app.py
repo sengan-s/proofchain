@@ -33,10 +33,10 @@ def allowed_file(filename):
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/<path:path>')
-def serve_static(path):
-    if os.path.exists(os.path.join(app.static_folder, path)):
-        return send_from_directory(app.static_folder, path)
+@app.errorhandler(404)
+def not_found(e):
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "Not found"}), 404
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/uploads/<path:filename>')

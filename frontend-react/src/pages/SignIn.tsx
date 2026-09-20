@@ -31,7 +31,7 @@ export function SignIn() {
   return (
     <div className="min-h-screen flex" style={{ background: '#05070B' }}>
       {/* Left panel */}
-      <div className="hidden lg:flex flex-col justify-between p-12 w-[480px] flex-shrink-0 relative overflow-hidden"
+      <div className="hidden lg:flex flex-col justify-between p-12 lg:w-1/2 flex-shrink-0 relative overflow-hidden"
         style={{ background: '#0B0F17', borderRight: '1px solid #1E293B' }}>
         <div className="absolute inset-0 bg-grid opacity-20" />
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full"
@@ -151,10 +151,11 @@ export function SignIn() {
           </p>
 
           <div className="mt-8 p-4 rounded-xl" style={{ background: 'rgba(124,58,237,0.06)', border: '1px solid rgba(124,58,237,0.2)' }}>
-            <p className="text-xs font-semibold mb-2" style={{ color: '#A78BFA' }}>Demo credentials</p>
-            <div className="space-y-1 text-xs font-mono" style={{ color: '#475569' }}>
+            <p className="font-semibold mb-2" style={{ color: '#A78BFA' }}>Demo credentials</p>
+            <div className="flex flex-col gap-1 text-[#94A3B8] font-mono text-xs">
+              <div>admin / admin123</div>
               <div>investigator / investigator123</div>
-              <div>analyst / analyst123</div>
+              <div>viewer / viewer123</div>
             </div>
           </div>
         </motion.div>

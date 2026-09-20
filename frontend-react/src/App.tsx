@@ -20,6 +20,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage'
 import { ActivityPage } from './pages/ActivityPage'
 import { SettingsPage } from './pages/SettingsPage'
 import { AdminPage } from './pages/AdminPage'
+import { QrVerify } from './pages/QrVerify'
 
 function ProtectedRoute({ children, requireAdmin = false }: { children: React.ReactNode, requireAdmin?: boolean }) {
   const { user, loading, isAdmin } = useAuth()
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="proofs/:id" element={<ProofDetail />} />
             <Route path="verification" element={<DocumentVerification />} />
             <Route path="video-verification" element={<VideoVerificationPage />} />
+            <Route path="qr-verify" element={<QrVerify />} />
             <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="activity" element={<ActivityPage />} />
             <Route path="settings" element={<SettingsPage />} />
